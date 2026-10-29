@@ -137,6 +137,20 @@ const MIRRORS = [
 let AUDIO_BASE = MIRRORS[0];
 const PROBE_FILE = 'data/index.json';
 
+// 数据加载：相对路径优先（Pages 域名），失败逐镜像回落（jsDelivr），避免 Pages 构建期/异常白屏
+async function fetchData(rel){
+  const sources = [rel].concat(MIRRORS.map(b=>b+rel));
+  let lastErr;
+  for(const src of sources){
+    try{
+      const r = await fetch(src, {cache:'force-cache'});
+      if(!r.ok) throw new Error('http '+r.status);
+      return await r.json();
+    }catch(e){ lastErr=e; }
+  }
+  throw lastErr;
+}
+
 const _blobCache = new Map();
 const _audioEls = new Map();
 function uniq(a){ return [...new Set(a)]; }
@@ -280,7 +294,7 @@ async function openLevel(levelKey){
   let data;
   if(CUR && CUR.level===levelKey && CUR.data){ data=CUR.data; }
   else {
-    try{ const res=await fetch(`data/${levelKey}.json`, {cache:'force-cache'}); data=await res.json(); }
+    try{ data=await fetchData(`data/${levelKey}.json`); }
     catch(e){ document.getElementById('lessonContent').innerHTML='<div class="err">加载级别数据失败。</div>'; return; }
   }
   CUR={ level:levelKey, data, unitIdx:0, lessonIdx:0 };
@@ -465,8 +479,7 @@ async function boot(){
   detectFastestCDN();
   registerAudioSW();
   try{
-    const res=await fetch('data/index.json', {cache:'force-cache'});
-    INDEX=await res.json();
+    INDEX=await fetchData('data/index.json');
   }catch(e){ INDEX=null; }
   renderPortal();
 }
