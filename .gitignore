@@ -1,0 +1,30 @@
+# 构建/调试产物（不推送到静态站仓库）
+__pycache__/
+build.log
+gen_audio.log
+gen_zh.log
+*.pyc
+.DS_Store
+
+# 构建脚本与中间产物（含本机绝对路径，仅本地用）
+build_wonderskills.py
+build_wonderskills_inspect.py
+gen_audio.py
+gen_zh.py
+_apply_zh.py
+audio_tasks.json
+zh_tasks.json
+zh_map.json
+zh_failed.json
+
+# 本地转换/辅助脚本（含本机绝对路径，仅本地用）
+soffice_convert.py
+_collect_zh_tasks.py
+
+# GitHub API 响应文件（可能含账号信息）
+resp_create.json
+resp_user.json
+
+# 本地转换/辅助脚本（含本机绝对路径，仅本地用）
+soffice_convert.py
+_collect_zh_tasks.py
